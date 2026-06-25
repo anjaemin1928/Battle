@@ -112,7 +112,7 @@ function App() {
       console.log('My peer ID is: ' + id);
       setPeerId(id);
 
-      findMatch(id, (opponentPeerId, amIHost) => {
+      findMatch(id, auth.currentUser.uid, (opponentPeerId, amIHost) => {
         setIsHost(amIHost);
         
         if (amIHost) {
