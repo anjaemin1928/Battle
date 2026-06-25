@@ -7,8 +7,16 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { findMatch } from './matchmaking'
 import Game from './Game'
 
-const ADJECTIVES = ["멋진", "강력한", "귀여운", "화난", "배고픈", "빛나는", "어둠의", "빠른", "느린", "전설의"];
-const NOUNS = ["강아지", "고양이", "호랑이", "사자", "토끼", "돼지", "독수리", "용", "거북이", "늑대"];
+const ADJECTIVES = [
+  "멋진", "강력한", "귀여운", "화난", "배고픈", "빛나는", "어둠의", "빠른", "느린", "전설의",
+  "신비한", "거대한", "작은", "용감한", "소심한", "게으른", "부지런한", "똑똑한", "엉뚱한", "행복한",
+  "슬픈", "졸린", "불타는", "얼어붙은", "맹독의", "치명적인", "사랑스러운", "무서운", "기묘한", "미친"
+];
+const NOUNS = [
+  "강아지", "고양이", "호랑이", "사자", "토끼", "돼지", "독수리", "용", "거북이", "늑대",
+  "곰", "여우", "사슴", "뱀", "상어", "고래", "펭귄", "부엉이", "까마귀", "쥐",
+  "다람쥐", "오리", "거위", "악어", "하마", "코끼리", "기린", "원숭이", "고릴라", "판다"
+];
 
 function App() {
   const [gameState, setGameState] = useState('loading'); // loading, login, create_profile, menu, matchmaking, playing
