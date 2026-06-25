@@ -51,7 +51,7 @@ function App() {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       console.error("Login failed:", error);
-      alert("로그인에 실패했습니다.");
+      alert("로그인에 실패했습니다. 원인: " + error.message + "\n(승인된 도메인 문제일 확률이 높습니다!)");
     }
   };
 
@@ -171,10 +171,10 @@ function App() {
           
           <button 
             onClick={handleGoogleLogin}
-            className="glass-button w-full flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-200"
+            className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-200 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
-            <LogIn className="w-5 h-5" />
-            <span className="font-bold">Google Login</span>
+            <LogIn className="w-5 h-5 text-slate-900" />
+            <span>Google Login</span>
           </button>
         </div>
       )}
