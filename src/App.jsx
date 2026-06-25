@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Crosshair, LogIn, Dices, Settings } from 'lucide-react'
+import { Crosshair, LogIn, Dices, Settings, Triangle, Square, Hexagon, Octagon, Box, Aperture } from 'lucide-react'
 import Peer from 'peerjs'
 import { auth, googleProvider, db } from './firebase'
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth'
@@ -17,6 +17,52 @@ const NOUNS = [
   "곰", "여우", "사슴", "뱀", "상어", "고래", "펭귄", "부엉이", "까마귀", "쥐",
   "다람쥐", "오리", "거위", "악어", "하마", "코끼리", "기린", "원숭이", "고릴라", "판다"
 ];
+
+const RankDisplay = ({ rank }) => {
+  let Icon = Triangle;
+  let colorClass = "text-slate-700";
+  let rankName = "전술가 (Tactician)";
+  
+  switch(rank) {
+    case 'TACTICIAN':
+      Icon = Triangle;
+      rankName = "전술가 (Tactician)";
+      break;
+    case 'STRATEGIST':
+      Icon = Square;
+      rankName = "전략가 (Strategist)";
+      break;
+    case 'COMMANDER':
+      Icon = Hexagon;
+      rankName = "사령관 (Commander)";
+      break;
+    case 'DIRECTOR':
+      Icon = Aperture;
+      rankName = "총괄 국장 (Director)";
+      break;
+    case 'MASTER':
+      Icon = Box;
+      rankName = "마스터 (Master)";
+      colorClass = "text-blue-600 drop-shadow-md";
+      break;
+    case 'GRANDMASTER':
+      Icon = Hexagon;
+      rankName = "그랜드마스터 (Grandmaster)";
+      colorClass = "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]";
+      break;
+    default:
+      Icon = Triangle;
+      rankName = "전술가 (Tactician)";
+      break;
+  }
+
+  return (
+    <span className="flex items-center gap-1.5">
+      <Icon className={`w-4 h-4 ${colorClass}`} strokeWidth={2.5} /> 
+      <span className={`font-bold ${colorClass}`}>{rankName}</span>
+    </span>
+  );
+};
 
 function App() {
   const [gameState, setGameState] = useState('loading'); // loading, login, create_profile, menu, matchmaking, playing
@@ -111,7 +157,7 @@ function App() {
       gold: 0,
       level: 1,
       exp: 0,
-      rank: 'UNRANKED',
+      rank: 'TACTICIAN',
       mmr: 1000,
       profilePic: 'default_01',
       sessionId: localSessionId.current,
@@ -275,12 +321,9 @@ function App() {
               <div className="w-full h-2 bg-slate-200 border border-slate-800 mt-1">
                 <div className="h-full bg-blueprint-green" style={{ width: `${userProfile.exp || 0}%` }}></div>
               </div>
-              <div className="text-xs font-bold mt-2 text-slate-600 flex items-center justify-between border-t border-slate-300 pt-1">
-                <span className="flex items-center gap-1">
-                  <span className="text-sm">🔰</span> 
-                  <span className="text-slate-800">{userProfile.rank || 'UNRANKED'}</span>
-                </span>
-                <button onClick={handleLogout} className="underline hover:text-red-600 cursor-pointer">LOGOUT</button>
+              <div className="text-xs mt-2 flex items-center justify-between border-t border-slate-300 pt-2">
+                <RankDisplay rank={userProfile.rank} />
+                <button onClick={handleLogout} className="underline font-bold text-slate-600 hover:text-red-600 cursor-pointer">LOGOUT</button>
               </div>
             </div>
           </div>
