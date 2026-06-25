@@ -28,15 +28,17 @@ function App() {
         setIsHost(amIHost);
         
         if (amIHost) {
-          // 내가 호스트면 방에 들어온 게스트의 연결을 기다림 (matchmaking.js에서 onMatchFound 호출 시점엔 이미 누군가 들어왔음)
-          // 하지만 사실 PeerJS 관점에서는 게스트가 나한테 connect()를 걸어오기를 기다리는 on('connection') 이벤트가 필요함.
-          // 여기서 onMatchFound가 트리거되었다는 건 게스트가 방에 들어왔다는 뜻. 이제 게스트가 연결할 때까지 대기.
+          // 내가 호스트면 대기
         } else {
           // 내가 게스트면 호스트에게 연결 시도
           console.log('Connecting to host:', opponentPeerId);
           const conn = peer.connect(opponentPeerId);
           setupConnection(conn);
         }
+      }).catch(err => {
+        console.error('Matchmaking error:', err);
+        setGameState('menu');
+        alert('매칭 실패! 파이어베이스 오류입니다.\n원인: ' + err.message + '\n\n💡 Firebase 콘솔에서 [Firestore Database]를 만들었는지 꼭 확인해 주세요!');
       });
     });
 
