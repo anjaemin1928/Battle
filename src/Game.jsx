@@ -40,16 +40,7 @@ export default function Game({ conn, isHost }) {
 
   return (
     <div className="flex flex-col items-center gap-6 p-4 w-full h-full">
-      <div className="flex justify-between w-full max-w-2xl text-white font-bold px-4">
-        <div className="bg-red-900/50 p-3 rounded-lg border border-red-500/30">
-          Enemy Units: {enemyUnits.length}
-        </div>
-        <div className="bg-blue-900/50 p-3 rounded-lg border border-blue-500/30">
-          My Units: {myUnits.length}
-        </div>
-      </div>
-
-      <div className="glass-panel p-4 inline-block">
+      <div className="glass-panel p-4 inline-block mt-8">
         <div className="grid grid-cols-10 grid-rows-10 gap-1 w-[400px] h-[400px] md:w-[600px] md:h-[600px]">
           {Array(10).fill(0).map((_, y) => 
             Array(10).fill(0).map((_, x) => {
