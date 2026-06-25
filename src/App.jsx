@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Crosshair, LogIn, Dices } from 'lucide-react'
+import { Crosshair, LogIn, Dices, Settings } from 'lucide-react'
 import Peer from 'peerjs'
 import { auth, googleProvider, db } from './firebase'
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth'
@@ -109,6 +109,8 @@ function App() {
       nickname: finalNickname,
       discriminator: discriminator,
       gold: 0,
+      level: 1,
+      exp: 0,
       profilePic: 'default_01',
       sessionId: localSessionId.current,
       createdAt: new Date().toISOString()
@@ -256,32 +258,45 @@ function App() {
       )}
 
       {gameState === 'menu' && userProfile && (
-        <div className="glass-panel p-8 max-w-md w-full text-center flex flex-col items-center gap-6">
-          
-          {/* 유저 프로필 영역 */}
-          <div className="w-full bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col items-center gap-2 relative">
-            <button onClick={handleLogout} className="absolute top-2 right-2 text-xs text-slate-500 hover:text-white transition-colors">로그아웃</button>
-            <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center border-2 border-neon-blue shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-              <span className="text-2xl">😎</span>
+        <div className="absolute inset-0 w-full h-full p-6">
+          {/* 유저 프로필 박스 (좌측 상단) */}
+          <div className="absolute top-8 left-8 sm:left-12 blueprint-box flex items-center gap-4 min-w-[300px] max-w-[350px]">
+            <div className="w-20 h-20 bg-slate-200 border-2 border-slate-800 rounded-full flex shrink-0 items-center justify-center overflow-hidden">
+              <span className="text-4xl">😎</span>
             </div>
-            <div>
-              <div className="text-xl font-bold text-white">{userProfile.nickname} <span className="text-slate-500 text-sm">#{userProfile.discriminator}</span></div>
-            </div>
-            <div className="bg-yellow-500/20 border border-yellow-500/50 text-yellow-400 font-bold px-4 py-1 rounded-full text-sm mt-2 flex items-center gap-1">
-              <span>💰</span> {userProfile.gold} G
+            <div className="flex-1">
+              <div className="text-xl font-bold tracking-wide break-all">{userProfile.nickname}<span className="text-sm text-slate-500 ml-1">#{userProfile.discriminator}</span></div>
+              <div className="flex justify-between items-end mt-1">
+                <div className="font-bold">LVL {userProfile.level || 1}</div>
+                <div className="text-xs font-bold text-slate-500">{userProfile.exp || 0}%</div>
+              </div>
+              <div className="w-full h-2 bg-slate-200 border border-slate-800 mt-1">
+                <div className="h-full bg-blueprint-green" style={{ width: `${userProfile.exp || 0}%` }}></div>
+              </div>
+              <div className="text-xs font-bold mt-1 text-slate-600 flex items-center justify-between">
+                <span>⭐ RECRUIT</span>
+                <button onClick={handleLogout} className="underline hover:text-red-600 cursor-pointer">LOGOUT</button>
+              </div>
             </div>
           </div>
 
-          <div className="w-full flex flex-col gap-4 mt-2">
+          {/* 설정 버튼 (우측 상단) */}
+          <button className="absolute top-8 right-8 sm:right-12 blueprint-btn-secondary">
+            <Settings className="w-5 h-5" />
+            <span>SETTINGS</span>
+          </button>
+
+          {/* 매칭 버튼 (중앙 하단) */}
+          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3 w-full px-4">
             <button 
               onClick={startMatchmaking}
-              className="glass-button-primary w-full py-4 text-xl"
+              className="blueprint-btn w-full max-w-md"
             >
-              Find Match
+              FIND MATCH
             </button>
-            <button className="glass-button bg-slate-700/50 hover:bg-slate-600/50 w-full border-slate-600">
-              상점 (Shop)
-            </button>
+            <div className="font-bold text-slate-600 tracking-wider text-sm sm:text-base text-center">
+              PLAYERS ONLINE: 12,450 &nbsp;|&nbsp; EST. WAIT TIME: 0:15
+            </div>
           </div>
         </div>
       )}
