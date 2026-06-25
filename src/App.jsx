@@ -287,16 +287,13 @@ function App() {
           </button>
 
           {/* 매칭 버튼 (중앙 하단) */}
-          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3 w-full px-4">
+          <div className="absolute bottom-8 sm:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full px-4">
             <button 
               onClick={startMatchmaking}
               className="blueprint-btn w-full max-w-md"
             >
               FIND MATCH
             </button>
-            <div className="font-bold text-slate-600 tracking-wider text-sm sm:text-base text-center">
-              PLAYERS ONLINE: 12,450 &nbsp;|&nbsp; EST. WAIT TIME: 0:15
-            </div>
           </div>
         </div>
       )}
