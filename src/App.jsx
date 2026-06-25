@@ -334,9 +334,9 @@ function App() {
               <div className="w-full h-2 bg-slate-200 border border-slate-800 mt-1">
                 <div className="h-full bg-blueprint-green" style={{ width: `${userProfile.exp || 0}%` }}></div>
               </div>
-              <div className="text-xs mt-2 flex items-center justify-between border-t border-slate-300 pt-2 relative">
+              <div className="text-xs mt-2 flex items-center justify-between border-t border-slate-300 pt-2">
                 <div 
-                  className="flex items-center gap-2 cursor-help group"
+                  className="flex items-center gap-2 cursor-help group relative"
                   onMouseEnter={handleMouseEnterMMR}
                 >
                   <span className="font-bold text-slate-700">MMR: {userProfile.mmr || 1000}</span>
