@@ -85,9 +85,17 @@ function App() {
         const userSnap = await getDoc(userDocRef);
 
         if (userSnap.exists()) {
-          // 기존 유저: 접속할 때마다 내 세션 ID로 덮어쓰기 (기존 기기 밀어내기)
-          await updateDoc(userDocRef, { sessionId: localSessionId.current });
-          setUserProfile({ ...userSnap.data(), sessionId: localSessionId.current });
+          // 기존 유저: 접속할 때마다 내 세션 ID로 덮어쓰기 + 누락된 필드 자동 보완 (마이그레이션)
+          const data = userSnap.data();
+          const updates = { sessionId: localSessionId.current };
+          
+          if (data.level === undefined) updates.level = 1;
+          if (data.exp === undefined) updates.exp = 0;
+          if (data.rank === undefined) updates.rank = 'TACTICIAN';
+          if (data.mmr === undefined) updates.mmr = 1000;
+          
+          await updateDoc(userDocRef, updates);
+          setUserProfile({ ...data, ...updates });
           setGameState('menu');
         } else {
           // 신규 유저
