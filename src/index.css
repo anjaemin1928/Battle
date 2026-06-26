@@ -16,11 +16,6 @@
   body {
     @apply bg-blueprint-bg text-blueprint-dark antialiased m-0 p-0 overflow-hidden;
     font-family: 'Rajdhani', sans-serif;
-    background-image: 
-      linear-gradient(var(--color-blueprint-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px);
-    background-size: 40px 40px;
-    background-position: center center;
   }
 }
 

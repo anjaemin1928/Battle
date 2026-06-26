@@ -27,6 +27,21 @@ function App() {
   const [selectedNoun, setSelectedNoun] = useState(NOUNS[0]);
   const localSessionId = useRef(Math.random().toString(36).substring(2, 15));
   
+  // Camera & Layout states
+  const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const UILayout = {
+    profile: { x: -200, y: -160 },
+    settings: { x: 200, y: -160 },
+    matchBtn: { x: 0, y: 160 },
+    login: { x: 0, y: 0 },
+    createProfile: { x: 0, y: 0 },
+    matchmaking: { x: 0, y: 0 },
+    playing: { x: 0, y: 0 }
+  };
+  
   // PeerJS states
   const [peerId, setPeerId] = useState(null);
   const [connection, setConnection] = useState(null);
@@ -199,137 +214,198 @@ function App() {
     setGameState('menu');
   };
 
+  const handleMouseDown = (e) => {
+    if (e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - cameraPos.x, y: e.clientY - cameraPos.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setCameraPos({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      {gameState === 'loading' && (
-        <div className="text-white text-xl animate-pulse">Loading...</div>
-      )}
-
-      {gameState === 'login' && (
-        <div className="glass-panel p-10 max-w-md w-full text-center flex flex-col items-center gap-8">
-          <div className="flex items-center justify-center gap-3">
-            <Crosshair className="w-12 h-12 text-neon-blue" />
-            <h1 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-purple-500">
-              BATTLE
-            </h1>
-          </div>
-          <p className="text-slate-300">Google 계정으로 로그인하여 시작하세요</p>
-          
-          <button 
-            onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-200 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 active:scale-95"
+    <div 
+      className="w-full h-screen overflow-hidden relative select-none"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{
+        backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+        backgroundPosition: `${cameraPos.x}px ${cameraPos.y}px`
+      }}
+    >
+      <div 
+        className="absolute top-1/2 left-1/2 w-0 h-0"
+        style={{ transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)` }}
+      >
+        {gameState === 'loading' && (
+          <div 
+            className="absolute text-white text-xl animate-pulse"
+            style={{ transform: 'translate(-50%, -50%)' }}
           >
-            <LogIn className="w-5 h-5 text-slate-900" />
-            <span>Google Login</span>
-          </button>
-        </div>
-      )}
-
-      {gameState === 'create_profile' && (
-        <div className="glass-panel p-8 max-w-md w-full text-center flex flex-col items-center gap-6">
-          <h2 className="text-2xl font-bold text-white">프로필 생성</h2>
-          <p className="text-slate-400">자신만의 닉네임을 조합해 보세요!</p>
-          
-          <div className="flex gap-2 w-full">
-            <select 
-              value={selectedAdj} 
-              onChange={(e) => setSelectedAdj(e.target.value)}
-              className="flex-1 bg-slate-800 text-white border border-slate-600 rounded-lg p-2 outline-none focus:border-neon-blue"
-            >
-              {ADJECTIVES.map(adj => <option key={adj} value={adj}>{adj}</option>)}
-            </select>
-            <select 
-              value={selectedNoun} 
-              onChange={(e) => setSelectedNoun(e.target.value)}
-              className="flex-1 bg-slate-800 text-white border border-slate-600 rounded-lg p-2 outline-none focus:border-neon-blue"
-            >
-              {NOUNS.map(noun => <option key={noun} value={noun}>{noun}</option>)}
-            </select>
+            Loading...
           </div>
+        )}
 
-          <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-700 w-full mt-2">
-            <div className="text-3xl font-black text-neon-blue mb-2">{selectedAdj} {selectedNoun}</div>
-            <div className="text-slate-500 text-sm">#?????? (무작위 발급)</div>
-          </div>
-
-          <div className="flex gap-4 w-full mt-2">
-            <button 
-              onClick={generateRandomName}
-              className="glass-button flex-1 flex items-center justify-center gap-2 bg-slate-700/80 hover:bg-slate-600/80"
-            >
-              <Dices className="w-5 h-5" /> 랜덤 뽑기
-            </button>
-            <button 
-              onClick={saveProfile}
-              className="glass-button-primary flex-1"
-            >
-              결정하기
-            </button>
-          </div>
-        </div>
-      )}
-
-      {gameState === 'menu' && userProfile && (
-        <div className="absolute inset-0 w-full h-full p-6">
-          {/* 유저 프로필 박스 (좌측 상단) */}
-          <div className="absolute top-8 left-8 sm:left-12 blueprint-box flex items-center gap-4 min-w-[300px] max-w-[350px]">
-            <div className="w-20 h-20 bg-slate-200 border-2 border-slate-800 rounded-full flex shrink-0 items-center justify-center overflow-hidden">
-              <span className="text-4xl">😎</span>
+        {gameState === 'login' && (
+          <div 
+            className="absolute glass-panel p-10 w-[400px] text-center flex flex-col items-center gap-8"
+            style={{ left: UILayout.login.x, top: UILayout.login.y, transform: 'translate(-50%, -50%)' }}
+          >
+            <div className="flex items-center justify-center gap-3">
+              <Crosshair className="w-12 h-12 text-neon-blue" />
+              <h1 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-purple-500">
+                BATTLE
+              </h1>
             </div>
-            <div className="flex-1">
-              <div className="text-xl font-bold tracking-wide break-all">{userProfile.nickname}<span className="text-sm text-slate-500 ml-1">#{userProfile.discriminator}</span></div>
-              <div className="flex justify-between items-end mt-1">
-                <div className="font-bold">LVL {userProfile.level || 1}</div>
-                <div className="text-xs font-bold text-slate-500">{userProfile.exp || 0}%</div>
+            <p className="text-slate-300">Google 계정으로 로그인하여 시작하세요</p>
+            
+            <button 
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-200 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 active:scale-95"
+            >
+              <LogIn className="w-5 h-5 text-slate-900" />
+              <span>Google Login</span>
+            </button>
+          </div>
+        )}
+
+        {gameState === 'create_profile' && (
+          <div 
+            className="absolute glass-panel p-8 w-[400px] text-center flex flex-col items-center gap-6"
+            style={{ left: UILayout.createProfile.x, top: UILayout.createProfile.y, transform: 'translate(-50%, -50%)' }}
+          >
+            <h2 className="text-2xl font-bold text-white">프로필 생성</h2>
+            <p className="text-slate-400">자신만의 닉네임을 조합해 보세요!</p>
+            
+            <div className="flex gap-2 w-full">
+              <select 
+                value={selectedAdj} 
+                onChange={(e) => setSelectedAdj(e.target.value)}
+                className="flex-1 bg-slate-800 text-white border border-slate-600 rounded-lg p-2 outline-none focus:border-neon-blue"
+              >
+                {ADJECTIVES.map(adj => <option key={adj} value={adj}>{adj}</option>)}
+              </select>
+              <select 
+                value={selectedNoun} 
+                onChange={(e) => setSelectedNoun(e.target.value)}
+                className="flex-1 bg-slate-800 text-white border border-slate-600 rounded-lg p-2 outline-none focus:border-neon-blue"
+              >
+                {NOUNS.map(noun => <option key={noun} value={noun}>{noun}</option>)}
+              </select>
+            </div>
+
+            <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-700 w-full mt-2">
+              <div className="text-3xl font-black text-neon-blue mb-2">{selectedAdj} {selectedNoun}</div>
+              <div className="text-slate-500 text-sm">#?????? (무작위 발급)</div>
+            </div>
+
+            <div className="flex gap-4 w-full mt-2">
+              <button 
+                onClick={generateRandomName}
+                className="glass-button flex-1 flex items-center justify-center gap-2 bg-slate-700/80 hover:bg-slate-600/80"
+              >
+                <Dices className="w-5 h-5" /> 랜덤 뽑기
+              </button>
+              <button 
+                onClick={saveProfile}
+                className="glass-button-primary flex-1"
+              >
+                결정하기
+              </button>
+            </div>
+          </div>
+        )}
+
+        {gameState === 'menu' && userProfile && (
+          <>
+            {/* 유저 프로필 박스 */}
+            <div 
+              className="absolute blueprint-box flex items-center gap-4 w-[350px]"
+              style={{ left: UILayout.profile.x, top: UILayout.profile.y, transform: 'translate(-50%, -50%)' }}
+            >
+              <div className="w-20 h-20 bg-slate-200 border-2 border-slate-800 rounded-full flex shrink-0 items-center justify-center overflow-hidden">
+                <span className="text-4xl">😎</span>
               </div>
-              <div className="w-full h-2 bg-slate-200 border border-slate-800 mt-1">
-                <div className="h-full bg-blueprint-green" style={{ width: `${userProfile.exp || 0}%` }}></div>
-              </div>
-              <div className="text-xs mt-2 flex items-center justify-between border-t border-slate-300 pt-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-700">MMR: {userProfile.mmr || 1000}</span>
+              <div className="flex-1">
+                <div className="text-xl font-bold tracking-wide break-all">{userProfile.nickname}<span className="text-sm text-slate-500 ml-1">#{userProfile.discriminator}</span></div>
+                <div className="flex justify-between items-end mt-1">
+                  <div className="font-bold">LVL {userProfile.level || 1}</div>
+                  <div className="text-xs font-bold text-slate-500">{userProfile.exp || 0}%</div>
                 </div>
-                <button onClick={handleLogout} className="underline font-bold text-slate-600 hover:text-red-600 cursor-pointer relative z-10">LOGOUT</button>
+                <div className="w-full h-2 bg-slate-200 border border-slate-800 mt-1">
+                  <div className="h-full bg-blueprint-green" style={{ width: `${userProfile.exp || 0}%` }}></div>
+                </div>
+                <div className="text-xs mt-2 flex items-center justify-between border-t border-slate-300 pt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-700">MMR: {userProfile.mmr || 1000}</span>
+                  </div>
+                  <button onClick={handleLogout} className="underline font-bold text-slate-600 hover:text-red-600 cursor-pointer relative z-10">LOGOUT</button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* 설정 버튼 (우측 상단) */}
-          <button className="absolute top-8 right-8 sm:right-12 blueprint-btn-secondary">
-            <Settings className="w-5 h-5" />
-            <span>SETTINGS</span>
-          </button>
-
-          {/* 매칭 버튼 (중앙 하단) */}
-          <div className="absolute bottom-8 sm:bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center w-full px-4">
+            {/* 설정 버튼 */}
             <button 
-              onClick={startMatchmaking}
-              className="blueprint-btn w-full max-w-md"
+              className="absolute blueprint-btn-secondary"
+              style={{ left: UILayout.settings.x, top: UILayout.settings.y, transform: 'translate(-50%, -50%)' }}
             >
-              FIND MATCH
+              <Settings className="w-5 h-5" />
+              <span>SETTINGS</span>
+            </button>
+
+            {/* 매칭 버튼 */}
+            <div 
+              className="absolute flex flex-col items-center w-[400px]"
+              style={{ left: UILayout.matchBtn.x, top: UILayout.matchBtn.y, transform: 'translate(-50%, -50%)' }}
+            >
+              <button 
+                onClick={startMatchmaking}
+                className="blueprint-btn w-full"
+              >
+                FIND MATCH
+              </button>
+            </div>
+          </>
+        )}
+
+        {gameState === 'matchmaking' && (
+          <div 
+            className="absolute glass-panel p-10 w-[400px] text-center flex flex-col items-center gap-6"
+            style={{ left: UILayout.matchmaking.x, top: UILayout.matchmaking.y, transform: 'translate(-50%, -50%)' }}
+          >
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-neon-blue"></div>
+            <h2 className="text-2xl font-bold text-white">Searching for opponent...</h2>
+            <p className="text-slate-400">Connecting to Firebase Signaling Server</p>
+            <button 
+              onClick={cancelMatchmaking}
+              className="glass-button-danger mt-4"
+            >
+              Cancel
             </button>
           </div>
+        )}
 
-        </div>
-      )}
-
-      {gameState === 'matchmaking' && (
-        <div className="glass-panel p-10 max-w-md w-full text-center flex flex-col items-center gap-6">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-neon-blue"></div>
-          <h2 className="text-2xl font-bold text-white">Searching for opponent...</h2>
-          <p className="text-slate-400">Connecting to Firebase Signaling Server</p>
-          <button 
-            onClick={cancelMatchmaking}
-            className="glass-button-danger mt-4"
+        {gameState === 'playing' && connection && (
+          <div 
+            className="absolute w-[800px] h-[600px] bg-slate-900 rounded-xl overflow-hidden shadow-2xl"
+            style={{ left: UILayout.playing.x, top: UILayout.playing.y, transform: 'translate(-50%, -50%)' }}
           >
-            Cancel
-          </button>
-        </div>
-      )}
-
-      {gameState === 'playing' && connection && (
-        <Game conn={connection} isHost={isHost} />
-      )}
+            <Game conn={connection} isHost={isHost} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
