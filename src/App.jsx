@@ -31,6 +31,8 @@ function App() {
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const keys = useRef({ w: false, a: false, s: false, d: false });
   const requestRef = useRef();
+  const isMovingRef = useRef(false);
+  const uiWrapperRef = useRef(null);
 
   const UILayout = {
     profile: { x: -200, y: -160 },
@@ -265,12 +267,22 @@ function App() {
       if (Math.abs(velocity.current.x) < 0.05) velocity.current.x = 0;
       if (Math.abs(velocity.current.y) < 0.05) velocity.current.y = 0;
 
-      if (velocity.current.x !== 0 || velocity.current.y !== 0) {
+      const currentlyMoving = velocity.current.x !== 0 || velocity.current.y !== 0;
+
+      if (currentlyMoving) {
+        if (!isMovingRef.current) {
+          isMovingRef.current = true;
+          if (uiWrapperRef.current) uiWrapperRef.current.style.pointerEvents = 'none';
+        }
         setCameraPos(prev => ({ 
           x: prev.x + velocity.current.x, 
           y: prev.y + velocity.current.y 
         }));
       } else {
+        if (isMovingRef.current) {
+          isMovingRef.current = false;
+          if (uiWrapperRef.current) uiWrapperRef.current.style.pointerEvents = 'auto';
+        }
         // 완전히 멈췄을 때 소수점 좌표를 정수로 스냅하여 정지 상태에서의 UI 블러 완벽 방지
         setCameraPos(prev => {
           const rx = Math.round(prev.x);
@@ -304,6 +316,7 @@ function App() {
       }}
     >
       <div 
+        ref={uiWrapperRef}
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
           transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`,
