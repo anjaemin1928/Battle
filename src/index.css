@@ -25,15 +25,15 @@
   }
   
   .glass-button {
-    @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2;
+    @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform data-[hovered=true]:scale-105 active:scale-95 flex items-center justify-center gap-2;
   }
   
   .glass-button-primary {
-    @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 bg-blue-600/80 hover:bg-blue-500 border border-blue-400/30 shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.6)];
+    @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform data-[hovered=true]:scale-105 active:scale-95 flex items-center justify-center gap-2 bg-blue-600/80 data-[hovered=true]:bg-blue-500 border border-blue-400/30 shadow-[0_0_15px_rgba(37,99,235,0.3)] data-[hovered=true]:shadow-[0_0_25px_rgba(59,130,246,0.6)];
   }
 
   .glass-button-danger {
-    @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-500 border border-red-400/30 shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)];
+    @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform data-[hovered=true]:scale-105 active:scale-95 flex items-center justify-center gap-2 bg-red-600/80 data-[hovered=true]:bg-red-500 border border-red-400/30 shadow-[0_0_15px_rgba(220,38,38,0.3)] data-[hovered=true]:shadow-[0_0_25px_rgba(239,68,68,0.6)];
   }
 
   /* New Blueprint classes */
@@ -45,7 +45,7 @@
     @apply bg-blueprint-green text-white border-2 border-slate-800 shadow-[6px_6px_0px_rgba(51,65,85,0.8)] px-16 py-5 font-bold text-4xl tracking-widest uppercase transition-all duration-150 cursor-pointer;
   }
   
-  .blueprint-btn:hover {
+  .blueprint-btn[data-hovered="true"] {
     @apply translate-y-[2px] translate-x-[2px] shadow-[4px_4px_0px_rgba(51,65,85,0.8)];
   }
   
@@ -57,7 +57,7 @@
     @apply bg-white text-slate-800 border-2 border-slate-800 shadow-[4px_4px_0px_rgba(51,65,85,0.8)] px-5 py-2 font-bold flex items-center gap-2 uppercase transition-all cursor-pointer;
   }
 
-  .blueprint-btn-secondary:hover {
+  .blueprint-btn-secondary[data-hovered="true"] {
     @apply bg-slate-50 translate-y-[1px] translate-x-[1px] shadow-[3px_3px_0px_rgba(51,65,85,0.8)];
   }
   
@@ -69,7 +69,7 @@
     @apply w-full h-full border border-slate-700/30 bg-slate-800/20 transition-colors duration-200;
   }
   
-  .grid-cell:hover {
+  .grid-cell[data-hovered="true"] {
     @apply bg-slate-700/40 cursor-pointer border-slate-500;
   }
 }

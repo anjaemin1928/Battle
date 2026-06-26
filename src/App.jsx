@@ -31,8 +31,18 @@ function App() {
   const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
   const keys = useRef({ w: false, a: false, s: false, d: false });
   const requestRef = useRef();
-  const isMovingRef = useRef(false);
-  const uiWrapperRef = useRef(null);
+  const mousePos = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (e.isTrusted) {
+        mousePos.current.x = e.clientX;
+        mousePos.current.y = e.clientY;
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const UILayout = {
     profile: { x: -200, y: -160 },
@@ -270,19 +280,11 @@ function App() {
       const currentlyMoving = velocity.current.x !== 0 || velocity.current.y !== 0;
 
       if (currentlyMoving) {
-        if (!isMovingRef.current) {
-          isMovingRef.current = true;
-          if (uiWrapperRef.current) uiWrapperRef.current.style.pointerEvents = 'none';
-        }
         setCameraPos(prev => ({ 
           x: prev.x + velocity.current.x, 
           y: prev.y + velocity.current.y 
         }));
       } else {
-        if (isMovingRef.current) {
-          isMovingRef.current = false;
-          if (uiWrapperRef.current) uiWrapperRef.current.style.pointerEvents = 'auto';
-        }
         // 완전히 멈췄을 때 소수점 좌표를 정수로 스냅하여 정지 상태에서의 UI 블러 완벽 방지
         setCameraPos(prev => {
           const rx = Math.round(prev.x);
@@ -293,6 +295,21 @@ function App() {
           return prev;
         });
       }
+      
+      // 마우스가 UI 요소 위에 있는지 AABB 충돌 검사하여 hover 상태 수동 계산
+      const interactives = document.querySelectorAll('[data-ui-interactive="true"]');
+      const mx = mousePos.current.x;
+      const my = mousePos.current.y;
+      interactives.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const isInside = mx >= rect.left && mx <= rect.right && my >= rect.top && my <= rect.bottom;
+        if (isInside) {
+          if (el.getAttribute('data-hovered') !== 'true') el.setAttribute('data-hovered', 'true');
+        } else {
+          if (el.getAttribute('data-hovered') === 'true') el.setAttribute('data-hovered', 'false');
+        }
+      });
+
       requestRef.current = requestAnimationFrame(updateCamera);
     };
 
@@ -316,7 +333,6 @@ function App() {
       }}
     >
       <div 
-        ref={uiWrapperRef}
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
           transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`,
@@ -347,7 +363,8 @@ function App() {
             
             <button 
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 hover:bg-slate-200 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105 active:scale-95"
+              data-ui-interactive="true"
+              className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 data-[hovered=true]:bg-slate-200 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform data-[hovered=true]:scale-105 active:scale-95"
             >
               <LogIn className="w-5 h-5 text-slate-900" />
               <span>Google Login</span>
@@ -388,12 +405,14 @@ function App() {
             <div className="flex gap-4 w-full mt-2">
               <button 
                 onClick={generateRandomName}
-                className="glass-button flex-1 flex items-center justify-center gap-2 bg-slate-700/80 hover:bg-slate-600/80"
+                data-ui-interactive="true"
+                className="glass-button flex-1 flex items-center justify-center gap-2 bg-slate-700/80 data-[hovered=true]:bg-slate-600/80"
               >
                 <Dices className="w-5 h-5" /> 랜덤 뽑기
               </button>
               <button 
                 onClick={saveProfile}
+                data-ui-interactive="true"
                 className="glass-button-primary flex-1"
               >
                 결정하기
@@ -425,13 +444,14 @@ function App() {
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-slate-700">MMR: {userProfile.mmr || 1000}</span>
                   </div>
-                  <button onClick={handleLogout} className="underline font-bold text-slate-600 hover:text-red-600 cursor-pointer relative z-10">LOGOUT</button>
+                  <button onClick={handleLogout} data-ui-interactive="true" className="underline font-bold text-slate-600 data-[hovered=true]:text-red-600 cursor-pointer relative z-10">LOGOUT</button>
                 </div>
               </div>
             </div>
 
             {/* 설정 버튼 */}
             <button 
+              data-ui-interactive="true"
               className="absolute blueprint-btn-secondary"
               style={{ left: UILayout.settings.x, top: UILayout.settings.y, transform: 'translate(-50%, -50%)' }}
             >
@@ -446,6 +466,7 @@ function App() {
             >
               <button 
                 onClick={startMatchmaking}
+                data-ui-interactive="true"
                 className="blueprint-btn w-full"
               >
                 FIND MATCH
@@ -464,6 +485,7 @@ function App() {
             <p className="text-slate-400">Connecting to Firebase Signaling Server</p>
             <button 
               onClick={cancelMatchmaking}
+              data-ui-interactive="true"
               className="glass-button-danger mt-4"
             >
               Cancel
