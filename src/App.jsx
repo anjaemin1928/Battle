@@ -270,6 +270,16 @@ function App() {
           x: prev.x + velocity.current.x, 
           y: prev.y + velocity.current.y 
         }));
+      } else {
+        // 완전히 멈췄을 때 소수점 좌표를 정수로 스냅하여 정지 상태에서의 UI 블러 완벽 방지
+        setCameraPos(prev => {
+          const rx = Math.round(prev.x);
+          const ry = Math.round(prev.y);
+          if (prev.x !== rx || prev.y !== ry) {
+            return { x: rx, y: ry };
+          }
+          return prev;
+        });
       }
       requestRef.current = requestAnimationFrame(updateCamera);
     };
@@ -296,8 +306,7 @@ function App() {
       <div 
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
-          transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`,
-          willChange: 'transform'
+          transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`
         }}
       >
         {gameState === 'loading' && (
