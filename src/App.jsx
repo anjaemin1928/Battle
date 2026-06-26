@@ -27,15 +27,6 @@ function App() {
   const [selectedNoun, setSelectedNoun] = useState(NOUNS[0]);
   const localSessionId = useRef(Math.random().toString(36).substring(2, 15));
   
-  // Rank Checking State
-  const [rankDetails, setRankDetails] = useState(null);
-  const [isCheckingRank, setIsCheckingRank] = useState(false);
-  
-  // MMR 변경 시 랭크 캐시 초기화
-  useEffect(() => {
-    setRankDetails(null);
-  }, [userProfile?.mmr]);
-  
   // PeerJS states
   const [peerId, setPeerId] = useState(null);
   const [connection, setConnection] = useState(null);
@@ -208,46 +199,6 @@ function App() {
     setGameState('menu');
   };
 
-  const handleMouseEnterMMR = () => {
-    if (!rankDetails && !isCheckingRank) {
-      checkRank();
-    }
-  };
-
-  const checkRank = async () => {
-    if (!userProfile) return;
-    setIsCheckingRank(true);
-    try {
-      const usersCol = collection(db, 'users');
-      const totalSnap = await getCountFromServer(usersCol);
-      const totalUsers = Math.max(totalSnap.data().count, 1);
-      
-      const higherQuery = query(usersCol, where('mmr', '>', userProfile.mmr || 1000));
-      const higherSnap = await getCountFromServer(higherQuery);
-      const higherUsers = higherSnap.data().count;
-      
-      const myRank = higherUsers + 1;
-      
-      let resultText = "";
-      if (myRank <= 1000) {
-        resultText = `${myRank}등`;
-      } else {
-        const percent = ((myRank / totalUsers) * 100).toFixed(1);
-        resultText = `상위 ${percent}%`;
-      }
-      
-      setRankDetails({
-        rank: myRank,
-        total: totalUsers,
-        text: resultText
-      });
-    } catch (error) {
-      console.error("Rank check failed:", error);
-    } finally {
-      setIsCheckingRank(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       {gameState === 'loading' && (
@@ -335,26 +286,8 @@ function App() {
                 <div className="h-full bg-blueprint-green" style={{ width: `${userProfile.exp || 0}%` }}></div>
               </div>
               <div className="text-xs mt-2 flex items-center justify-between border-t border-slate-300 pt-2">
-                <div 
-                  className="flex items-center gap-2 cursor-help group relative"
-                  onMouseEnter={handleMouseEnterMMR}
-                >
+                <div className="flex items-center gap-2">
                   <span className="font-bold text-slate-700">MMR: {userProfile.mmr || 1000}</span>
-                  
-                  {/* Tooltip */}
-                  <div className="absolute top-1/2 left-full -translate-y-1/2 ml-3 hidden group-hover:block w-max z-20">
-                    <div className="bg-slate-800 text-white text-xs font-bold px-3 py-1.5 rounded shadow-lg whitespace-nowrap relative">
-                      {isCheckingRank ? (
-                        <span className="animate-pulse">등수 확인 중...</span>
-                      ) : rankDetails ? (
-                        <span>{rankDetails.text}</span>
-                      ) : (
-                        <span>정보 없음</span>
-                      )}
-                      {/* 좌측 화살표 꼬리 */}
-                      <div className="absolute top-1/2 right-full -translate-y-1/2 w-2 h-2 bg-slate-800 transform rotate-45 translate-x-1"></div>
-                    </div>
-                  </div>
                 </div>
                 <button onClick={handleLogout} className="underline font-bold text-slate-600 hover:text-red-600 cursor-pointer relative z-10">LOGOUT</button>
               </div>
