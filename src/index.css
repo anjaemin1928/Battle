@@ -10,6 +10,10 @@
   --color-blueprint-line: #d1d5db;
   --color-blueprint-dark: #334155;
   --color-blueprint-green: #6b7a5d;
+  
+  /* Unified Blueprint Shadows */
+  --shadow-bp: 6px 6px 0px rgba(51,65,85,1);
+  --shadow-bp-hover: 3px 3px 0px rgba(51,65,85,1);
 }
 
 @layer base {
@@ -36,17 +40,17 @@
     @apply px-6 py-3 rounded-lg font-bold text-white transition-all duration-300 transform data-[hovered=true]:scale-105 active:scale-95 flex items-center justify-center gap-2 bg-red-600/80 data-[hovered=true]:bg-red-500 border border-red-400/30 shadow-[0_0_15px_rgba(220,38,38,0.3)] data-[hovered=true]:shadow-[0_0_25px_rgba(239,68,68,0.6)];
   }
 
-  /* New Blueprint classes */
+  /* Unified Blueprint classes */
   .blueprint-box {
-    @apply bg-white border-2 border-slate-700 shadow-[5px_5px_0px_rgba(51,65,85,0.15)] p-4 relative;
+    @apply bg-white border-2 border-slate-800 shadow-bp p-4 relative;
   }
 
   .blueprint-btn {
-    @apply bg-blueprint-green text-white border-2 border-slate-800 shadow-[6px_6px_0px_rgba(51,65,85,0.8)] px-16 py-5 font-bold text-4xl tracking-widest uppercase transition-all duration-150 cursor-pointer;
+    @apply bg-blueprint-green text-white border-2 border-slate-800 shadow-bp px-16 py-5 font-bold text-4xl tracking-widest uppercase transition-all duration-150 cursor-pointer;
   }
   
   .blueprint-btn[data-hovered="true"] {
-    @apply translate-y-[2px] translate-x-[2px] shadow-[4px_4px_0px_rgba(51,65,85,0.8)];
+    @apply translate-y-[3px] translate-x-[3px] shadow-bp-hover;
   }
   
   .blueprint-btn:active {
@@ -54,15 +58,15 @@
   }
 
   .blueprint-btn-secondary {
-    @apply bg-white text-slate-800 border-2 border-slate-800 shadow-[4px_4px_0px_rgba(51,65,85,0.8)] px-5 py-2 font-bold flex items-center gap-2 uppercase transition-all cursor-pointer;
+    @apply bg-white text-slate-800 border-2 border-slate-800 shadow-bp px-5 py-2 font-bold flex items-center gap-2 uppercase transition-all cursor-pointer;
   }
 
   .blueprint-btn-secondary[data-hovered="true"] {
-    @apply bg-slate-50 translate-y-[1px] translate-x-[1px] shadow-[3px_3px_0px_rgba(51,65,85,0.8)];
+    @apply bg-slate-50 translate-y-[3px] translate-x-[3px] shadow-bp-hover;
   }
   
   .blueprint-btn-secondary:active {
-    @apply translate-y-[4px] translate-x-[4px] shadow-none;
+    @apply translate-y-[6px] translate-x-[6px] shadow-none;
   }
 
   .grid-cell {
