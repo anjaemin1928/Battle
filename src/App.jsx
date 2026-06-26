@@ -359,17 +359,7 @@ function App() {
   }, []);
 
   return (
-    <div 
-      className="w-full h-screen overflow-hidden relative select-none"
-      style={{
-        backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
-        backgroundSize: '40px 40px',
-        backgroundPosition: `${cameraPos.x}px ${cameraPos.y}px`,
-        backgroundPositionX: `calc(50% + ${cameraPos.x}px - 20px)`,
-        backgroundPositionY: `calc(50% + ${cameraPos.y}px - 20px)`,
-        willChange: 'background-position'
-      }}
-    >
+    <div className="w-full h-screen overflow-hidden relative select-none bg-blueprint-bg">
       <div 
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
@@ -377,6 +367,20 @@ function App() {
           willChange: 'transform'
         }}
       >
+        {/* 유저님의 아이디어: UI처럼 실제 좌표 공간 안에 초거대 그리드 박스를 생성하여 완벽하게 동기화! */}
+        <div 
+          className="absolute pointer-events-none -z-10"
+          style={{
+            width: '10000px',
+            height: '10000px',
+            left: '-5000px',
+            top: '-5000px',
+            backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+            backgroundPosition: 'center'
+          }}
+        />
+
         {gameState === 'loading' && (
           <div 
             className="absolute text-white text-xl animate-pulse"
