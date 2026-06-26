@@ -4,8 +4,27 @@ import Peer from 'peerjs'
 import { auth, googleProvider, db } from './firebase'
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, getCountFromServer } from 'firebase/firestore'
-import { findMatch } from './matchmaking'
-import Game from './Game'
+const getPixelCoords = (item, width, height) => {
+  const cellW = Math.max(1, Math.ceil(width / 100));
+  const cellH = Math.max(1, Math.ceil(height / 100));
+  const gridAreaW = cellW * 100;
+  const gridAreaH = cellH * 100;
+  
+  let px = item.x * 100;
+  let py = item.y * 100;
+  
+  const pivot = item.pivot || 'center';
+  
+  if (pivot.includes('left')) px += width / 2;
+  else if (pivot.includes('right')) px += gridAreaW - width / 2;
+  else px += gridAreaW / 2;
+  
+  if (pivot.includes('top')) py += height / 2;
+  else if (pivot.includes('bottom')) py += gridAreaH - height / 2;
+  else py += gridAreaH / 2;
+  
+  return { left: px, top: py, transform: 'translate(-50%, -50%)' };
+};
 
 const ADJECTIVES = [
   "멋진", "강력한", "귀여운", "화난", "배고픈", "빛나는", "어둠의", "빠른", "느린", "전설의",
@@ -18,8 +37,6 @@ const NOUNS = [
   "다람쥐", "오리", "거위", "악어", "하마", "코끼리", "기린", "원숭이", "고릴라", "판다"
 ];
 
-
-
 function App() {
   const [gameState, setGameState] = useState('loading'); // loading, login, create_profile, menu, matchmaking, playing
   const [userProfile, setUserProfile] = useState(null);
@@ -28,7 +45,8 @@ function App() {
   const localSessionId = useRef(Math.random().toString(36).substring(2, 15));
   
   // Camera & Layout states
-  const [cameraPos, setCameraPos] = useState({ x: 0, y: 0 });
+  // PeerJS states
+  const [peerId, setPeerId] = useState('');
   const keys = useRef({ w: false, a: false, s: false, d: false });
   const requestRef = useRef();
   const mousePos = useRef({ x: 0, y: 0 });
@@ -45,17 +63,35 @@ function App() {
   }, []);
 
   const UILayout = {
-    profile: { x: -200, y: -160 },
-    settings: { x: 200, y: -160 },
-    matchBtn: { x: 0, y: 160 },
-    login: { x: 0, y: 0 },
-    createProfile: { x: 0, y: 0 },
-    matchmaking: { x: 0, y: 0 },
-    playing: { x: 0, y: 0 }
+    camera: { x: -3, y: -3, pivot: 'top-left' },
+    profile: { x: -3, y: -3, pivot: 'top-left' },
+    settings: { x: 5, y: -3, pivot: 'top-right' },
+    matchBtn: { x: 0, y: 3, pivot: 'bottom-center' },
+    login: { x: -2, y: -1, pivot: 'center' },
+    createProfile: { x: -2, y: -2, pivot: 'center' },
+    matchmaking: { x: -2, y: -1, pivot: 'center' },
+    playing: { x: -4, y: -3, pivot: 'center' }
   };
   
-  // PeerJS states
-  const [peerId, setPeerId] = useState(null);
+  // 카메라 초기 위치를 UILayout.camera 를 통해 화면(800x600 기준) 정중앙에 맞추기
+  const [cameraPos, setCameraPos] = useState(() => {
+    const cam = UILayout.camera;
+    if (!cam) return { x: 0, y: 0 };
+    const width = 800; const height = 600;
+    const cellW = Math.ceil(width / 100); const cellH = Math.ceil(height / 100);
+    const gridAreaW = cellW * 100; const gridAreaH = cellH * 100;
+    
+    let px = cam.x * 100; let py = cam.y * 100;
+    if (cam.pivot.includes('left')) px += width / 2;
+    else if (cam.pivot.includes('right')) px += gridAreaW - width / 2;
+    else px += gridAreaW / 2;
+    
+    if (cam.pivot.includes('top')) py += height / 2;
+    else if (cam.pivot.includes('bottom')) py += gridAreaH - height / 2;
+    else py += gridAreaH / 2;
+    
+    return { x: -px, y: -py };
+  });
   const [connection, setConnection] = useState(null);
   const [isHost, setIsHost] = useState(false);
   const peerRef = useRef(null);
@@ -327,8 +363,10 @@ function App() {
       className="w-full h-screen overflow-hidden relative select-none"
       style={{
         backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
-        backgroundSize: '40px 40px',
+        backgroundSize: '100px 100px',
         backgroundPosition: `${cameraPos.x}px ${cameraPos.y}px`,
+        backgroundPositionX: `calc(50% + ${cameraPos.x}px - 50px)`,
+        backgroundPositionY: `calc(50% + ${cameraPos.y}px - 50px)`,
         willChange: 'background-position'
       }}
     >
@@ -350,8 +388,8 @@ function App() {
 
         {gameState === 'login' && (
           <div 
-            className="absolute glass-panel p-10 w-[400px] text-center flex flex-col items-center gap-8"
-            style={{ left: UILayout.login.x, top: UILayout.login.y, transform: 'translate(-50%, -50%)' }}
+            className="absolute glass-panel p-8 w-[400px] h-[300px] flex flex-col items-center justify-center gap-6"
+            style={getPixelCoords(UILayout.login, 400, 300)}
           >
             <div className="flex items-center justify-center gap-3">
               <Crosshair className="w-12 h-12 text-neon-blue" />
@@ -374,8 +412,8 @@ function App() {
 
         {gameState === 'create_profile' && (
           <div 
-            className="absolute glass-panel p-8 w-[400px] text-center flex flex-col items-center gap-6"
-            style={{ left: UILayout.createProfile.x, top: UILayout.createProfile.y, transform: 'translate(-50%, -50%)' }}
+            className="absolute glass-panel p-8 w-[400px] h-[400px] flex flex-col items-center justify-center gap-6"
+            style={getPixelCoords(UILayout.createProfile, 400, 400)}
           >
             <h2 className="text-2xl font-bold text-white">프로필 생성</h2>
             <p className="text-slate-400">자신만의 닉네임을 조합해 보세요!</p>
@@ -425,8 +463,8 @@ function App() {
           <>
             {/* 유저 프로필 박스 */}
             <div 
-              className="absolute blueprint-box flex items-center gap-4 w-[350px]"
-              style={{ left: UILayout.profile.x, top: UILayout.profile.y, transform: 'translate(-50%, -50%)' }}
+              className="absolute blueprint-box flex items-center gap-4 w-[350px] h-[120px]"
+              style={getPixelCoords(UILayout.profile, 350, 120)}
             >
               <div className="w-20 h-20 bg-slate-200 border-2 border-slate-800 rounded-full flex shrink-0 items-center justify-center overflow-hidden">
                 <span className="text-4xl">😎</span>
@@ -452,8 +490,8 @@ function App() {
             {/* 설정 버튼 */}
             <button 
               data-ui-interactive="true"
-              className="absolute blueprint-btn-secondary"
-              style={{ left: UILayout.settings.x, top: UILayout.settings.y, transform: 'translate(-50%, -50%)' }}
+              className="absolute blueprint-btn-secondary w-[150px] h-[50px]"
+              style={getPixelCoords(UILayout.settings, 150, 50)}
             >
               <Settings className="w-5 h-5" />
               <span>SETTINGS</span>
@@ -461,8 +499,8 @@ function App() {
 
             {/* 매칭 버튼 */}
             <div 
-              className="absolute flex flex-col items-center w-[400px]"
-              style={{ left: UILayout.matchBtn.x, top: UILayout.matchBtn.y, transform: 'translate(-50%, -50%)' }}
+              className="absolute flex flex-col items-center w-[400px] h-[80px]"
+              style={getPixelCoords(UILayout.matchBtn, 400, 80)}
             >
               <button 
                 onClick={startMatchmaking}
@@ -477,8 +515,8 @@ function App() {
 
         {gameState === 'matchmaking' && (
           <div 
-            className="absolute glass-panel p-10 w-[400px] text-center flex flex-col items-center gap-6"
-            style={{ left: UILayout.matchmaking.x, top: UILayout.matchmaking.y, transform: 'translate(-50%, -50%)' }}
+            className="absolute glass-panel p-10 w-[400px] h-[300px] flex flex-col items-center justify-center gap-6"
+            style={getPixelCoords(UILayout.matchmaking, 400, 300)}
           >
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-neon-blue"></div>
             <h2 className="text-2xl font-bold text-white">Searching for opponent...</h2>
@@ -496,7 +534,7 @@ function App() {
         {gameState === 'playing' && connection && (
           <div 
             className="absolute w-[800px] h-[600px] bg-slate-900 rounded-xl overflow-hidden shadow-2xl"
-            style={{ left: UILayout.playing.x, top: UILayout.playing.y, transform: 'translate(-50%, -50%)' }}
+            style={getPixelCoords(UILayout.playing, 800, 600)}
           >
             <Game conn={connection} isHost={isHost} />
           </div>
