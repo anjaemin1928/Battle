@@ -73,11 +73,11 @@ function App() {
     playing: { x: -4, y: -3, pivot: 'center' }
   };
   
-  // 카메라 초기 위치를 UILayout.camera 를 통해 화면(800x600 기준) 정중앙에 맞추기
+  // 카메라 초기 위치를 UILayout.camera 를 통해 화면(지정된 카메라 크기 기준) 정중앙에 맞추기
   const [cameraPos, setCameraPos] = useState(() => {
     const cam = UILayout.camera;
     if (!cam) return { x: 0, y: 0 };
-    const width = 800; const height = 600;
+    const width = cam.width || 800; const height = cam.height || 600;
     const cellW = Math.ceil(width / 100); const cellH = Math.ceil(height / 100);
     const gridAreaW = cellW * 100; const gridAreaH = cellH * 100;
     
