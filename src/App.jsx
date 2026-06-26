@@ -236,9 +236,9 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
-    const maxSpeed = 5; // 속도 제한 (눈 피로도 감소를 위해 기존 12에서 7로 감소)
-    const acceleration = 0.4; // 가속도 (스무딩)
-    const friction = 0.9; // 마찰력 (키를 뗐을 때 부드러운 감속)
+    const maxSpeed = 15; // 답답함을 없애기 위해 속도 대폭 상향
+    const acceleration = 1.2; // 빠릿빠릿한 출발
+    const friction = 0.85; // 부드러운 감속
 
     const updateCamera = () => {
       let accelX = 0;
@@ -306,7 +306,8 @@ function App() {
       <div 
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
-          transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`
+          transform: `translate(${cameraPos.x}px, ${cameraPos.y}px)`,
+          willChange: 'transform'
         }}
       >
         {gameState === 'loading' && (
