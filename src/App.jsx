@@ -76,7 +76,7 @@ function App() {
   };
   
   // 카메라 초기 위치를 UILayout.camera 를 통해 화면(지정된 카메라 크기 기준) 정중앙에 맞추기
-  const [cameraPos, setCameraPos] = useState(() => {
+  const cameraPos = useRef((() => {
     const cam = UILayout.camera;
     if (!cam) return { x: 0, y: 0 };
     const width = cam.width || 800; const height = cam.height || 600;
@@ -93,7 +93,8 @@ function App() {
     else py += gridAreaH / 2;
     
     return { x: -px, y: -py };
-  });
+  })());
+  const cameraRef = useRef(null);
   const [connection, setConnection] = useState(null);
   const [isHost, setIsHost] = useState(false);
   const peerRef = useRef(null);
@@ -335,32 +336,33 @@ function App() {
       const currentlyMoving = velocity.current.x !== 0 || velocity.current.y !== 0;
 
       if (currentlyMoving || zoomChanged) {
-        setCameraPos(prev => {
-          let nextX = prev.x;
-          let nextY = prev.y;
-          
-          if (zoomChanged) {
-            // Adjust camera position to keep the center of the screen perfectly still while zooming!
-            nextX *= (newZoom / oldZoom);
-            nextY *= (newZoom / oldZoom);
-          }
-          if (currentlyMoving) {
-            // Adjust WASD pan speed based on zoom so it feels consistent
-            nextX += velocity.current.x / newZoom; 
-            nextY += velocity.current.y / newZoom;
-          }
-          return { x: nextX, y: nextY };
-        });
+        let nextX = cameraPos.current.x;
+        let nextY = cameraPos.current.y;
+        
+        if (zoomChanged) {
+          nextX *= (newZoom / oldZoom);
+          nextY *= (newZoom / oldZoom);
+        }
+        if (currentlyMoving) {
+          nextX += velocity.current.x; 
+          nextY += velocity.current.y;
+        }
+        
+        cameraPos.current.x = nextX;
+        cameraPos.current.y = nextY;
+        if (cameraRef.current) {
+          cameraRef.current.style.transform = `translate(${nextX}px, ${nextY}px) scale(${newZoom})`;
+        }
       } else {
-        // 완전히 멈췄을 때 소수점 좌표를 정수로 스냅하여 정지 상태에서의 UI 블러 완벽 방지
-        setCameraPos(prev => {
-          const rx = Math.round(prev.x);
-          const ry = Math.round(prev.y);
-          if (prev.x !== rx || prev.y !== ry) {
-            return { x: rx, y: ry };
+        const rx = Math.round(cameraPos.current.x);
+        const ry = Math.round(cameraPos.current.y);
+        if (cameraPos.current.x !== rx || cameraPos.current.y !== ry) {
+          cameraPos.current.x = rx;
+          cameraPos.current.y = ry;
+          if (cameraRef.current) {
+            cameraRef.current.style.transform = `translate(${rx}px, ${ry}px) scale(${newZoom})`;
           }
-          return prev;
-        });
+        }
       }
       
       // 마우스가 UI 요소 위에 있는지 AABB 충돌 검사하여 hover 상태 수동 계산
@@ -395,14 +397,15 @@ function App() {
       onWheel={(e) => {
         const zoomSensitivity = 0.001;
         let nextZoom = targetZoom.current - (e.deltaY * zoomSensitivity);
-        nextZoom = Math.max(0.7, Math.min(1.4, nextZoom));
+        nextZoom = Math.max(0.3, Math.min(1.5, nextZoom));
         targetZoom.current = nextZoom;
       }}
     >
       <div 
+        ref={cameraRef}
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
-          transform: `translate(${cameraPos.x}px, ${cameraPos.y}px) scale(${currentZoom.current})`,
+          transform: `translate(${cameraPos.current.x}px, ${cameraPos.current.y}px) scale(${currentZoom.current})`,
           willChange: 'transform'
         }}
       >
