@@ -65,7 +65,7 @@ function App() {
   }, []);
 
   const UILayout = {
-    camera: { x: -3, y: -3, width: 1000, height: 700, pivot: 'top-left' },
+    camera: { x: -5, y: -3, width: 1000, height: 700, pivot: 'top-left' },
     profile: { x: -3, y: -3, pivot: 'top-left' },
     settings: { x: 5, y: -3, pivot: 'top-right' },
     matchBtn: { x: 0, y: 3, pivot: 'bottom-center' },
@@ -412,8 +412,8 @@ function App() {
             left: '-5000px',
             top: '-5000px',
             backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
-            backgroundSize: '100px 100px',
-            backgroundPosition: '0 0'
+            backgroundSize: '40px 40px',
+            backgroundPosition: 'center'
           }}
         />
 
