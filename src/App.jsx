@@ -394,12 +394,6 @@ function App() {
   return (
     <div 
       className="w-full h-screen overflow-hidden relative select-none bg-blueprint-bg"
-      onWheel={(e) => {
-        const zoomSensitivity = 0.001;
-        let nextZoom = targetZoom.current - (e.deltaY * zoomSensitivity);
-        nextZoom = Math.max(0.3, Math.min(1.5, nextZoom));
-        targetZoom.current = nextZoom;
-      }}
     >
       <div 
         ref={cameraRef}
