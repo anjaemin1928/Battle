@@ -412,8 +412,8 @@ function App() {
             left: '-5000px',
             top: '-5000px',
             backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-            backgroundPosition: 'center'
+            backgroundSize: '100px 100px',
+            backgroundPosition: '0 0'
           }}
         />
 
