@@ -77,6 +77,31 @@
       1px 0px 0px 0px rgba(255,255,255,0.5);
     border-left: 1px solid rgba(71,85,105,0.3);
     transform: translateX(-50%);
+    overflow: visible;
+  }
+
+  /* 종이 접힘 경사면 (Fold Shadow) - 레일 왼쪽 */
+  .mechanical-rail::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    width: 12px;
+    background: linear-gradient(to right, transparent, rgba(51, 65, 85, 0.06));
+    pointer-events: none;
+  }
+
+  /* 종이 접힘 경사면 (Fold Shadow) - 레일 오른쪽 */
+  .mechanical-rail::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 100%;
+    width: 12px;
+    background: linear-gradient(to left, transparent, rgba(51, 65, 85, 0.06));
+    pointer-events: none;
   }
 
   .grid-cell {
