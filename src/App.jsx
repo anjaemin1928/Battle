@@ -325,8 +325,7 @@ function App() {
     setGameState('menu');
   };
 
-  // Programmatic Camera Movement (WASD removed by user request)
-  // Target position can be smoothly interpolated here in the future
+  // 세로 전용 카메라 이동 (W/S키)
   useEffect(() => {
     const handleMouseDown = (e) => {
       const target = e.target.closest('[data-ui-interactive="true"]');
@@ -348,10 +347,36 @@ function App() {
       }
     };
 
+    const handleKeyDown = (e) => {
+      if (e.key === 'w' || e.key === 'W') keys.current.w = true;
+      if (e.key === 's' || e.key === 'S') keys.current.s = true;
+    };
+
+    const handleKeyUp = (e) => {
+      if (e.key === 'w' || e.key === 'W') keys.current.w = false;
+      if (e.key === 's' || e.key === 'S') keys.current.s = false;
+    };
+
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
     const updateCamera = () => {
+
+      // W/S 세로 이동 (가로 잠금)
+      const speed = 5;
+      let moved = false;
+      if (keys.current.w) { cameraPos.current.y += speed; moved = true; }
+      if (keys.current.s) { cameraPos.current.y -= speed; moved = true; }
+
+      if (moved) {
+        const zoom = currentZoom.current;
+        if (cameraRef.current) {
+          cameraRef.current.style.transform = `translate(${cameraPos.current.x * zoom}px, ${cameraPos.current.y * zoom}px) scale(${zoom})`;
+        }
+        updateGridZones(cameraPos.current.x, cameraPos.current.y, zoom);
+      }
 
       let zoomChanged = false;
       let newZoom = currentZoom.current;
@@ -427,6 +452,8 @@ function App() {
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
       cancelAnimationFrame(requestRef.current);
     };
   }, []);
