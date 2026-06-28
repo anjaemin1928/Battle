@@ -67,7 +67,7 @@ function App() {
       targetZoom.current = scale;
       currentZoom.current = scale;
       if (cameraRef.current) {
-        cameraRef.current.style.transform = `translate(${cameraPos.current.x}px, ${cameraPos.current.y}px) scale(${scale})`;
+        cameraRef.current.style.transform = `translate(${cameraPos.current.x * scale}px, ${cameraPos.current.y * scale}px) scale(${scale})`;
       }
     };
     
@@ -354,10 +354,6 @@ function App() {
         let nextX = cameraPos.current.x;
         let nextY = cameraPos.current.y;
         
-        if (zoomChanged) {
-          nextX *= (newZoom / oldZoom);
-          nextY *= (newZoom / oldZoom);
-        }
         if (currentlyMoving) {
           nextX += velocity.current.x; 
           nextY += velocity.current.y;
@@ -366,7 +362,7 @@ function App() {
         cameraPos.current.x = nextX;
         cameraPos.current.y = nextY;
         if (cameraRef.current) {
-          cameraRef.current.style.transform = `translate(${nextX}px, ${nextY}px) scale(${newZoom})`;
+          cameraRef.current.style.transform = `translate(${nextX * newZoom}px, ${nextY * newZoom}px) scale(${newZoom})`;
         }
       } else {
         const rx = Math.round(cameraPos.current.x);
@@ -375,7 +371,7 @@ function App() {
           cameraPos.current.x = rx;
           cameraPos.current.y = ry;
           if (cameraRef.current) {
-            cameraRef.current.style.transform = `translate(${rx}px, ${ry}px) scale(${newZoom})`;
+            cameraRef.current.style.transform = `translate(${rx * newZoom}px, ${ry * newZoom}px) scale(${newZoom})`;
           }
         }
       }
@@ -414,7 +410,7 @@ function App() {
         ref={cameraRef}
         className="absolute top-1/2 left-1/2 w-0 h-0"
         style={{ 
-          transform: `translate(${cameraPos.current.x}px, ${cameraPos.current.y}px) scale(${currentZoom.current})`,
+          transform: `translate(${cameraPos.current.x * currentZoom.current}px, ${cameraPos.current.y * currentZoom.current}px) scale(${currentZoom.current})`,
           willChange: 'transform'
         }}
       >
