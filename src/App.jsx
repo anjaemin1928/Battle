@@ -283,6 +283,29 @@ function App() {
   // Programmatic Camera Movement (WASD removed by user request)
   // Target position can be smoothly interpolated here in the future
   useEffect(() => {
+    const handleMouseDown = (e) => {
+      const target = e.target.closest('[data-ui-interactive="true"]');
+      if (target) {
+        target.setAttribute('data-pressed', 'true');
+      }
+    };
+
+    const handleMouseUp = (e) => {
+      const target = e.target.closest('[data-ui-interactive="true"]');
+      if (target) {
+        setTimeout(() => {
+          target.removeAttribute('data-pressed');
+        }, 250);
+      } else {
+        document.querySelectorAll('[data-pressed="true"]').forEach(el => {
+          setTimeout(() => el.removeAttribute('data-pressed'), 250);
+        });
+      }
+    };
+
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+
     const updateCamera = () => {
 
       let zoomChanged = false;
@@ -341,6 +364,8 @@ function App() {
     requestRef.current = requestAnimationFrame(updateCamera);
 
     return () => {
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
       cancelAnimationFrame(requestRef.current);
     };
   }, []);

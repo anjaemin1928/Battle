@@ -54,7 +54,7 @@
     @apply shadow-[16px_16px_0px_rgba(51,65,85,1)];
   }
   
-  .blueprint-btn:active {
+  .blueprint-btn[data-pressed="true"], .blueprint-btn:active {
     @apply shadow-[0px_0px_0px_rgba(51,65,85,1)];
     @apply transition-all duration-[250ms] ease-[cubic-bezier(0.34,1.56,0.64,1)];
   }
@@ -68,7 +68,7 @@
     @apply bg-slate-50 shadow-[16px_16px_0px_rgba(51,65,85,1)];
   }
   
-  .blueprint-btn-secondary:active {
+  .blueprint-btn-secondary[data-pressed="true"], .blueprint-btn-secondary:active {
     @apply bg-slate-200 shadow-[0px_0px_0px_rgba(51,65,85,1)];
     @apply transition-all duration-[250ms] ease-[cubic-bezier(0.34,1.56,0.64,1)];
   }
