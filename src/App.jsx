@@ -396,6 +396,10 @@ function App() {
           }}
         />
 
+        {/* 기계식 레일 (좌측: -300px, 우측: 700px) */}
+        <div className="mechanical-rail" style={{ left: '-300px' }} />
+        <div className="mechanical-rail" style={{ left: '700px' }} />
+
         {gameState === 'loading' && (
           <div 
             className="absolute text-white text-xl animate-pulse"
