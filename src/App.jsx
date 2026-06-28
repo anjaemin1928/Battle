@@ -69,6 +69,10 @@ function App() {
       if (cameraRef.current) {
         cameraRef.current.style.transform = `translate(${cameraPos.current.x * scale}px, ${cameraPos.current.y * scale}px) scale(${scale})`;
       }
+      if (gridRef.current) {
+        gridRef.current.style.backgroundSize = `${40 * scale}px ${40 * scale}px`;
+        gridRef.current.style.backgroundPosition = `calc(50vw + ${cameraPos.current.x * scale}px) calc(50vh + ${cameraPos.current.y * scale}px)`;
+      }
     };
     
     window.addEventListener('mousemove', handleMouseMove);
@@ -110,6 +114,7 @@ function App() {
     return { x: -px, y: -py };
   })());
   const cameraRef = useRef(null);
+  const gridRef = useRef(null);
   const [connection, setConnection] = useState(null);
   const [isHost, setIsHost] = useState(false);
   const peerRef = useRef(null);
@@ -332,6 +337,10 @@ function App() {
         if (cameraRef.current) {
           cameraRef.current.style.transform = `translate(${nextX * newZoom}px, ${nextY * newZoom}px) scale(${newZoom})`;
         }
+        if (gridRef.current) {
+          gridRef.current.style.backgroundSize = `${40 * newZoom}px ${40 * newZoom}px`;
+          gridRef.current.style.backgroundPosition = `calc(50vw + ${nextX * newZoom}px) calc(50vh + ${nextY * newZoom}px)`;
+        }
       } else {
         const rx = Math.round(cameraPos.current.x);
         const ry = Math.round(cameraPos.current.y);
@@ -340,6 +349,9 @@ function App() {
           cameraPos.current.y = ry;
           if (cameraRef.current) {
             cameraRef.current.style.transform = `translate(${rx * newZoom}px, ${ry * newZoom}px) scale(${newZoom})`;
+          }
+          if (gridRef.current) {
+            gridRef.current.style.backgroundPosition = `calc(50vw + ${rx * newZoom}px) calc(50vh + ${ry * newZoom}px)`;
           }
         }
       }
@@ -374,6 +386,17 @@ function App() {
     <div 
       className="w-full h-screen overflow-hidden relative select-none bg-blueprint-bg"
     >
+      {/* 고정 해상도 1px 그리드 (안티앨리어싱 및 굵기 불균형 방지) */}
+      <div 
+        ref={gridRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
+          backgroundSize: `${40 * currentZoom.current}px ${40 * currentZoom.current}px`,
+          backgroundPosition: `calc(50vw + ${cameraPos.current.x * currentZoom.current}px) calc(50vh + ${cameraPos.current.y * currentZoom.current}px)`
+        }}
+      />
+
       <div 
         ref={cameraRef}
         className="absolute top-1/2 left-1/2 w-0 h-0"
@@ -382,20 +405,6 @@ function App() {
           willChange: 'transform'
         }}
       >
-        {/* 유저님의 아이디어: UI처럼 실제 좌표 공간 안에 초거대 그리드 박스를 생성하여 완벽하게 동기화! */}
-        <div 
-          className="absolute pointer-events-none -z-10"
-          style={{
-            width: '10000px',
-            height: '10000px',
-            left: '-5000px',
-            top: '-5000px',
-            backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
-            backgroundSize: '40px 40px',
-            backgroundPosition: '0 0'
-          }}
-        />
-
         {/* 기계식 레일 (좌측: -480px, 우측: 880px) - 유저 도면 기준 중앙에서 17칸(680px) 거리 */}
         <div className="mechanical-rail" style={{ left: '-480px' }} />
         <div className="mechanical-rail" style={{ left: '880px' }} />
