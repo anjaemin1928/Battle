@@ -50,9 +50,9 @@ function App() {
   const keys = useRef({ w: false, a: false, s: false, d: false });
   const requestRef = useRef();
   const mousePos = useRef({ x: 0, y: 0 });
-  const getScaleFor55Grids = () => (typeof window !== 'undefined' ? window.innerWidth / 2200 : 0.7);
-  const targetZoom = useRef(getScaleFor55Grids());
-  const currentZoom = useRef(getScaleFor55Grids());
+  const getScaleForPerfectGrids = () => (typeof window !== 'undefined' ? window.innerWidth / 2160 : 0.7); // 54 grids * 40px = 2160px
+  const targetZoom = useRef(getScaleForPerfectGrids());
+  const currentZoom = useRef(getScaleForPerfectGrids());
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -63,7 +63,7 @@ function App() {
     };
     
     const handleResize = () => {
-      const scale = getScaleFor55Grids();
+      const scale = getScaleForPerfectGrids();
       targetZoom.current = scale;
       currentZoom.current = scale;
       if (cameraRef.current) {
@@ -428,7 +428,7 @@ function App() {
             top: '-5000px',
             backgroundImage: 'linear-gradient(var(--color-blueprint-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-blueprint-line) 1px, transparent 1px)',
             backgroundSize: '40px 40px',
-            backgroundPosition: 'center'
+            backgroundPosition: '0 0'
           }}
         />
 
