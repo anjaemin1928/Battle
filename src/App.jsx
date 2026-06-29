@@ -642,20 +642,7 @@ function App() {
                   padding: 0
                 }}
               >
-                {/* 패널 헤더 */}
-                <div className="flex items-center justify-between border-b-2 border-slate-800 px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Settings className="w-4 h-4" />
-                    <span className="font-bold text-sm uppercase tracking-widest">Settings</span>
-                  </div>
-                  <button 
-                    onClick={() => setIsSettingsOpen(false)}
-                    data-ui-interactive="true"
-                    className="w-6 h-6 flex items-center justify-center border border-slate-800 bg-white data-[hovered=true]:bg-red-100 data-[hovered=true]:border-red-500 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
+
 
                 {/* 사운드 섹션 */}
                 <div className="px-4 py-3 border-b border-slate-300">
