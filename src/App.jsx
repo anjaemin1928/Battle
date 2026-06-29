@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Crosshair, LogIn, Dices, Settings, Search, X } from 'lucide-react'
+import { Crosshair, LogIn, Dices, Settings, Search, X, Check } from 'lucide-react'
 import Peer from 'peerjs'
 import { auth, googleProvider, db } from './firebase'
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth'
@@ -39,7 +39,7 @@ function App() {
   const [selectedNoun, setSelectedNoun] = useState(NOUNS[0]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [volumes, setVolumes] = useState({ master: 80, bgm: 60, sfx: 100 });
-  const [mutes, setMutes] = useState({ master: false, bgm: false, sfx: false });
+  const [audioEnabled, setAudioEnabled] = useState({ master: true, bgm: true, sfx: true });
   const localSessionId = useRef(Math.random().toString(36).substring(2, 15));
   
   // Camera & Layout states
@@ -664,10 +664,10 @@ function App() {
                         />
                         <span className="w-8 text-right font-mono font-bold text-slate-700">{volumes[type]}</span>
                         <button 
-                          onClick={() => setMutes(prev => ({ ...prev, [type]: !prev[type] }))}
-                          className={`w-6 h-6 flex shrink-0 items-center justify-center border-2 border-slate-800 transition-colors ${mutes[type] ? 'bg-red-500' : 'bg-white hover:bg-slate-100'}`}
+                          onClick={() => setAudioEnabled(prev => ({ ...prev, [type]: !prev[type] }))}
+                          className={`w-6 h-6 flex shrink-0 items-center justify-center border-2 border-slate-800 transition-colors ${audioEnabled[type] ? 'bg-blueprint-green' : 'bg-white hover:bg-slate-100'}`}
                         >
-                          {mutes[type] && <X className="w-4 h-4 text-white" strokeWidth={3} />}
+                          {audioEnabled[type] && <Check className="w-4 h-4 text-white" strokeWidth={3} />}
                         </button>
                       </div>
                     ))}
