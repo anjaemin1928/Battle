@@ -134,13 +134,13 @@ function App() {
     const midpointX = halfW + (MIDPOINT_WORLD + camX) * zoom;
     const bgSize = `${40 * zoom}px ${40 * zoom}px`;
     const bgY = `calc(50vh + ${camY * zoom}px)`;
-    // 완벽한 거울 대칭을 위한 시프트 복구
-    const shifts = [-4, 12, 12, -12];
+    // 완벽한 거울 대칭을 위한 시프트 복구 (질문자님 직감대로 2px 우측 이동)
+    const shifts = [4, 20, 20, -4];
     const clips = [
       `polygon(0 0, ${railLeftX}px 0, ${railLeftX}px 100%, 0 100%)`,
       `polygon(${railLeftX}px 0, ${midpointX}px 0, ${midpointX}px 100%, ${railLeftX}px 100%)`,
-      `polygon(${midpointX}px 0, ${railRightX + 24 * zoom}px 0, ${railRightX + 24 * zoom}px 100%, ${midpointX}px 100%)`,
-      `polygon(${railRightX + 24 * zoom}px 0, 100% 0, 100% 100%, ${railRightX + 24 * zoom}px 100%)`
+      `polygon(${midpointX}px 0, ${railRightX}px 0, ${railRightX}px 100%, ${midpointX}px 100%)`,
+      `polygon(${railRightX}px 0, 100% 0, 100% 100%, ${railRightX}px 100%)`
     ];
     gridZoneRefs.forEach((ref, i) => {
       if (ref.current) {
@@ -467,12 +467,12 @@ function App() {
         const railLeftX = halfW + (-480 + camX) * zoom;
         const railRightX = halfW + (880 + camX) * zoom;
         const midpointX = halfW + (200 + camX) * zoom;
-        const shifts = [-4, 12, 12, -12];
+        const shifts = [4, 20, 20, -4];
         const clips = [
           `polygon(0 0, ${railLeftX}px 0, ${railLeftX}px 100%, 0 100%)`,
           `polygon(${railLeftX}px 0, ${midpointX}px 0, ${midpointX}px 100%, ${railLeftX}px 100%)`,
-          `polygon(${midpointX}px 0, ${railRightX + 24 * zoom}px 0, ${railRightX + 24 * zoom}px 100%, ${midpointX}px 100%)`,
-          `polygon(${railRightX + 24 * zoom}px 0, 100% 0, 100% 100%, ${railRightX + 24 * zoom}px 100%)`
+          `polygon(${midpointX}px 0, ${railRightX}px 0, ${railRightX}px 100%, ${midpointX}px 100%)`,
+          `polygon(${railRightX}px 0, 100% 0, 100% 100%, ${railRightX}px 100%)`
         ];
         return (
           <div
