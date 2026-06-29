@@ -637,7 +637,7 @@ function App() {
             {/* 세팅 패널 (우측 레일에 매달림) */}
             {isSettingsOpen && (
               <div 
-                className="absolute blueprint-box w-[260px] flex flex-col gap-0"
+                className="absolute blueprint-box w-[320px] flex flex-col gap-0"
                 style={{
                   ...getPixelCoords(UILayout.settingsPanel),
                   padding: 0
@@ -662,6 +662,7 @@ function App() {
                             background: `linear-gradient(to right, var(--color-blueprint-green) ${volumes[type]}%, #e2e8f0 ${volumes[type]}%)`
                           }}
                         />
+                        <span className="w-8 text-right font-mono font-bold text-slate-700">{volumes[type]}</span>
                         <button 
                           onClick={() => setMutes(prev => ({ ...prev, [type]: !prev[type] }))}
                           className={`w-6 h-6 flex shrink-0 items-center justify-center border-2 border-slate-800 transition-colors ${mutes[type] ? 'bg-red-500' : 'bg-white hover:bg-slate-100'}`}
