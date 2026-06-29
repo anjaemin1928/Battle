@@ -644,11 +644,11 @@ function App() {
             {/* 세팅 패널 (우측 레일에 매달림) */}
             {hasOpenedSettings && (
               <div 
-                className="absolute z-10"
+                className="absolute z-10 w-[320px]"
                 style={getPixelCoords(UILayout.settingsPanel)}
               >
                 <div 
-                  className={`blueprint-box w-[320px] flex flex-col gap-0 ${isSettingsOpen ? 'animate-dropAndLock' : 'animate-unlockAndRetract pointer-events-none'}`}
+                  className={`blueprint-box w-full flex flex-col gap-0 ${isSettingsOpen ? 'animate-dropAndLock' : 'animate-unlockAndRetract pointer-events-none'}`}
                   style={{ padding: 0 }}
                 >
 
