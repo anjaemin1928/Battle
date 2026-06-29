@@ -711,7 +711,8 @@ function App() {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
             {/* 매칭 버튼 */}
             <div 
