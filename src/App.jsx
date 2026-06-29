@@ -40,7 +40,14 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [volumes, setVolumes] = useState({ master: 80, bgm: 60, sfx: 100 });
   const [audioEnabled, setAudioEnabled] = useState({ master: true, bgm: true, sfx: true });
+  const [hasOpenedSettings, setHasOpenedSettings] = useState(false);
   const localSessionId = useRef(Math.random().toString(36).substring(2, 15));
+  
+  useEffect(() => {
+    if (isSettingsOpen && !hasOpenedSettings) {
+      setHasOpenedSettings(true);
+    }
+  }, [isSettingsOpen, hasOpenedSettings]);
   
   // Camera & Layout states
   // PeerJS states
@@ -635,9 +642,9 @@ function App() {
             </button>
 
             {/* 세팅 패널 (우측 레일에 매달림) */}
-            {isSettingsOpen && (
+            {hasOpenedSettings && (
               <div 
-                className="absolute blueprint-box w-[320px] flex flex-col gap-0"
+                className={`absolute blueprint-box w-[320px] flex flex-col gap-0 ${isSettingsOpen ? 'animate-dropAndLock' : 'animate-unlockAndRetract pointer-events-none'}`}
                 style={{
                   ...getPixelCoords(UILayout.settingsPanel),
                   padding: 0

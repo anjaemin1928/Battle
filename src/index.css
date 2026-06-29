@@ -109,4 +109,25 @@
     border-radius: 0;
     cursor: pointer;
   }
+
+  @keyframes dropAndLock {
+    0% { transform: translateY(-100vh); }
+    60% { transform: translateY(20px); }
+    80% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+  }
+
+  @keyframes unlockAndRetract {
+    0% { transform: translateY(0); }
+    20% { transform: translateY(15px); }
+    100% { transform: translateY(-100vh); }
+  }
+
+  .animate-dropAndLock {
+    animation: dropAndLock 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+
+  .animate-unlockAndRetract {
+    animation: unlockAndRetract 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+  }
 }
