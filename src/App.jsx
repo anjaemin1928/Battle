@@ -625,6 +625,7 @@ function App() {
             <button 
               onClick={() => setIsSettingsOpen(!isSettingsOpen)}
               data-ui-interactive="true"
+              data-pressed={isSettingsOpen}
               className="absolute blueprint-btn-secondary w-[150px] h-[50px]"
               style={getPixelCoords(UILayout.settings)}
             >
