@@ -87,8 +87,8 @@ function App() {
   const UILayout = {
     camera: { x: -3, y: -3, width: 1000, height: 700, pivot: 'top-left' },
     profile: { x: -3, y: -3, pivot: 'top-left' },
-    settings: { x: 5.88, y: -3, pivot: 'top-right' }, // Right edge at 588px (20px gap from panel)
-    settingsPanel: { x: 8.68, y: -3, pivot: 'top-right' }, // Right edge at 868px (flush with rail left edge)
+    settings: { x: 7.3, y: -3, pivot: 'top-right' }, // Right edge at 730px (20px gap from panel)
+    settingsPanel: { x: 8.8, y: -3, pivot: 'top-center' }, // Horizontally centered exactly on the right rail (880px)
     matchBtn: { x: 2, y: 4, pivot: 'bottom-center' },
     login: { x: 0, y: 0.5, pivot: 'center' },
     createProfile: { x: 0, y: 0, pivot: 'center' },
