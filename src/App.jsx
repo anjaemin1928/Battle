@@ -688,6 +688,13 @@ function App() {
                       <span className="text-sm font-bold">Version</span>
                       <span className="text-xs font-bold text-slate-400">v0.1.0</span>
                     </div>
+                    <button 
+                      onClick={() => alert("로그아웃 되었습니다.")}
+                      data-ui-interactive="true"
+                      className="mt-2 w-full py-2 bg-red-50 text-red-600 border border-red-200 font-bold text-sm tracking-widest uppercase hover:bg-red-100 transition-colors"
+                    >
+                      LOGOUT
+                    </button>
                   </div>
                 </div>
               </div>
