@@ -22,23 +22,15 @@ const getPixelCoords = (item) => {
   return { left: px, top: py, transform: `translate(${tx}, ${ty})` };
 };
 
-const ADJECTIVES = [
-  "멋진", "강력한", "귀여운", "화난", "배고픈", "빛나는", "어둠의", "빠른", "느린", "전설의",
-  "신비한", "거대한", "작은", "용감한", "소심한", "게으른", "부지런한", "똑똑한", "엉뚱한", "행복한",
-  "슬픈", "졸린", "불타는", "얼어붙은", "맹독의", "치명적인", "사랑스러운", "무서운", "기묘한", "미친"
-];
-const NOUNS = [
-  "강아지", "고양이", "호랑이", "사자", "토끼", "돼지", "독수리", "용", "거북이", "늑대",
-  "곰", "여우", "사슴", "뱀", "상어", "고래", "펭귄", "부엉이", "까마귀", "쥐",
-  "다람쥐", "오리", "거위", "악어", "하마", "코끼리", "기린", "원숭이", "고릴라", "판다"
-];
+const ADJ_KEYS = Array.from({ length: 30 }, (_, i) => `adj_${i}`);
+const NOUN_KEYS = Array.from({ length: 30 }, (_, i) => `noun_${i}`);
 
 function App() {
   const { t, i18n } = useTranslation();
   const [gameState, setGameState] = useState('loading'); // loading, login, create_profile, menu, matchmaking, playing
   const [userProfile, setUserProfile] = useState(null);
-  const [selectedAdj, setSelectedAdj] = useState(ADJECTIVES[0]);
-  const [selectedNoun, setSelectedNoun] = useState(NOUNS[0]);
+  const [selectedAdj, setSelectedAdj] = useState(ADJ_KEYS[0]);
+  const [selectedNoun, setSelectedNoun] = useState(NOUN_KEYS[0]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [volumes, setVolumes] = useState({ master: 80, bgm: 60, sfx: 100 });
   const [audioEnabled, setAudioEnabled] = useState({ master: true, bgm: true, sfx: true });
@@ -174,8 +166,16 @@ function App() {
         const userSnap = await getDoc(userDocRef);
 
         if (userSnap.exists()) {
-          // 기존 유저: 접속할 때마다 내 세션 ID로 덮어쓰기 + 누락된 필드 자동 보완 (마이그레이션)
           const data = userSnap.data();
+          
+          // 구형 데이터(문자열 닉네임) 감지 시 프로필 강제 재생성 유도
+          if (typeof data.nickname === 'string') {
+            generateRandomName();
+            setGameState('create_profile');
+            return;
+          }
+
+          // 기존 유저: 접속할 때마다 내 세션 ID로 덮어쓰기 + 누락된 필드 자동 보완 (마이그레이션)
           const updates = { sessionId: localSessionId.current };
           
           if (data.level === undefined) updates.level = 1;
@@ -234,8 +234,8 @@ function App() {
   };
 
   const generateRandomName = () => {
-    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    const adj = ADJ_KEYS[Math.floor(Math.random() * ADJ_KEYS.length)];
+    const noun = NOUN_KEYS[Math.floor(Math.random() * NOUN_KEYS.length)];
     setSelectedAdj(adj);
     setSelectedNoun(noun);
   };
@@ -244,12 +244,11 @@ function App() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const finalNickname = `${selectedAdj} ${selectedNoun}`;
     const discriminator = Math.floor(100000 + Math.random() * 900000).toString();
     
     const newProfile = {
       uid: user.uid,
-      nickname: finalNickname,
+      nickname: { adj: selectedAdj, noun: selectedNoun },
       discriminator: discriminator,
       gold: 0,
       level: 1,
@@ -569,19 +568,19 @@ function App() {
                 onChange={(e) => setSelectedAdj(e.target.value)}
                 className="flex-1 bg-slate-800 text-white border border-slate-600 rounded-lg p-2 outline-none focus:border-neon-blue"
               >
-                {ADJECTIVES.map(adj => <option key={adj} value={adj}>{adj}</option>)}
+                {ADJ_KEYS.map(adj => <option key={adj} value={adj}>{t(adj)}</option>)}
               </select>
               <select 
                 value={selectedNoun} 
                 onChange={(e) => setSelectedNoun(e.target.value)}
                 className="flex-1 bg-slate-800 text-white border border-slate-600 rounded-lg p-2 outline-none focus:border-neon-blue"
               >
-                {NOUNS.map(noun => <option key={noun} value={noun}>{noun}</option>)}
+                {NOUN_KEYS.map(noun => <option key={noun} value={noun}>{t(noun)}</option>)}
               </select>
             </div>
 
             <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-700 w-full mt-2">
-              <div className="text-3xl font-black text-neon-blue mb-2">{selectedAdj} {selectedNoun}</div>
+              <div className="text-3xl font-black text-neon-blue mb-2">{t(selectedAdj)} {t(selectedNoun)}</div>
               <div className="text-slate-500 text-sm">{t('randomTag')}</div>
             </div>
 
@@ -615,7 +614,7 @@ function App() {
                 <span className="text-4xl">😎</span>
               </div>
               <div className="flex-1">
-                <div className="text-xl font-bold tracking-wide break-all">{userProfile.nickname}<span className="text-sm text-slate-500 ml-1">#{userProfile.discriminator}</span></div>
+                <div className="text-xl font-bold tracking-wide break-all">{t(userProfile.nickname.adj)} {t(userProfile.nickname.noun)}<span className="text-sm text-slate-500 ml-1">#{userProfile.discriminator}</span></div>
                 <div className="flex justify-between items-end mt-1">
                   <div className="font-bold">LVL {userProfile.level || 1}</div>
                   <div className="text-xs font-bold text-slate-500">{userProfile.exp || 0}%</div>
