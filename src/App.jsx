@@ -4,6 +4,7 @@ import Peer from 'peerjs'
 import { auth, googleProvider, db } from './firebase'
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, getCountFromServer } from 'firebase/firestore'
+import { useTranslation } from 'react-i18next'
 const getPixelCoords = (item) => {
   let px = item.x * 100;
   let py = item.y * 100;
@@ -33,6 +34,7 @@ const NOUNS = [
 ];
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [gameState, setGameState] = useState('loading'); // loading, login, create_profile, menu, matchmaking, playing
   const [userProfile, setUserProfile] = useState(null);
   const [selectedAdj, setSelectedAdj] = useState(ADJECTIVES[0]);
@@ -548,7 +550,7 @@ function App() {
               className="w-full flex items-center justify-center gap-2 bg-white text-slate-900 data-[hovered=true]:bg-slate-200 px-6 py-3 rounded-lg font-bold transition-all duration-300 transform data-[hovered=true]:scale-105 active:scale-95"
             >
               <LogIn className="w-5 h-5 text-slate-900" />
-              <span>Google Login</span>
+              <span>{t('googleLogin')}</span>
             </button>
           </div>
         )}
@@ -558,8 +560,8 @@ function App() {
             className="absolute glass-panel p-8 w-[400px] h-[400px] flex flex-col items-center justify-center gap-6"
             style={getPixelCoords(UILayout.createProfile)}
           >
-            <h2 className="text-2xl font-bold text-white">프로필 생성</h2>
-            <p className="text-slate-400">자신만의 닉네임을 조합해 보세요!</p>
+            <h2 className="text-2xl font-bold text-white">{t('createProfile')}</h2>
+            <p className="text-slate-400">{t('createProfileDesc')}</p>
             
             <div className="flex gap-2 w-full">
               <select 
@@ -580,7 +582,7 @@ function App() {
 
             <div className="bg-slate-800/80 p-6 rounded-xl border border-slate-700 w-full mt-2">
               <div className="text-3xl font-black text-neon-blue mb-2">{selectedAdj} {selectedNoun}</div>
-              <div className="text-slate-500 text-sm">#?????? (무작위 발급)</div>
+              <div className="text-slate-500 text-sm">{t('randomTag')}</div>
             </div>
 
             <div className="flex gap-4 w-full mt-2">
@@ -589,14 +591,14 @@ function App() {
                 data-ui-interactive="true"
                 className="glass-button flex-1 flex items-center justify-center gap-2 bg-slate-700/80 data-[hovered=true]:bg-slate-600/80"
               >
-                <Dices className="w-5 h-5" /> 랜덤 뽑기
+                <Dices className="w-5 h-5" /> {t('randomize')}
               </button>
               <button 
                 onClick={saveProfile}
                 data-ui-interactive="true"
                 className="glass-button-primary flex-1"
               >
-                결정하기
+                {t('confirm')}
               </button>
             </div>
           </div>
@@ -638,7 +640,7 @@ function App() {
               style={getPixelCoords(UILayout.settings)}
             >
               <Settings className="w-5 h-5" />
-              <span>SETTINGS</span>
+              <span>{t('settings')}</span>
             </button>
 
             {/* 세팅 패널 (우측 레일에 매달림) */}
@@ -655,11 +657,11 @@ function App() {
 
                 {/* 사운드 섹션 */}
                 <div className="px-4 py-3 border-b border-slate-300">
-                  <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Sound</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">{t('sound')}</div>
                   <div className="flex flex-col gap-3">
                     {['master', 'bgm', 'sfx'].map(type => (
                       <div key={type} className="flex items-center gap-2">
-                        <span className="text-sm font-bold uppercase w-14">{type}</span>
+                        <span className="text-sm font-bold uppercase w-14">{t(type)}</span>
                         <input 
                           type="range" 
                           min="0" max="100" 
@@ -684,21 +686,28 @@ function App() {
 
                 {/* 디스플레이 섹션 */}
                 <div className="px-4 py-3 border-b border-slate-300">
-                  <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Display</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">{t('display')}</div>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold">Language</span>
-                      <span className="text-sm font-bold text-slate-600">한국어</span>
+                      <span className="text-sm font-bold">{t('language')}</span>
+                      <select
+                        value={i18n.language}
+                        onChange={(e) => i18n.changeLanguage(e.target.value)}
+                        className="bg-slate-100 text-slate-800 border-2 border-slate-800 font-bold text-sm px-2 py-1 outline-none cursor-pointer"
+                      >
+                        <option value="ko">한국어 (KOR)</option>
+                        <option value="en">English (ENG)</option>
+                      </select>
                     </div>
                   </div>
                 </div>
 
                 {/* 계정 섹션 */}
                 <div className="px-4 py-3">
-                  <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Account</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">{t('account')}</div>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold">Version</span>
+                      <span className="text-sm font-bold">{t('version')}</span>
                       <span className="text-xs font-bold text-slate-400">v0.1.0</span>
                     </div>
                     <button 
@@ -706,7 +715,7 @@ function App() {
                       data-ui-interactive="true"
                       className="mt-2 w-full py-2 bg-red-50 text-red-600 border border-red-200 font-bold text-sm tracking-widest uppercase hover:bg-red-100 transition-colors"
                     >
-                      LOGOUT
+                      {t('logout')}
                     </button>
                   </div>
                 </div>
@@ -724,7 +733,7 @@ function App() {
                 data-ui-interactive="true"
                 className="blueprint-btn w-full"
               >
-                FIND MATCH
+                {t('findMatch')}
               </button>
             </div>
           </>
@@ -736,14 +745,14 @@ function App() {
             style={getPixelCoords(UILayout.matchmaking)}
           >
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-neon-blue"></div>
-            <h2 className="text-2xl font-bold text-white">Searching for opponent...</h2>
+            <h2 className="text-2xl font-bold text-white">{t('searching')}</h2>
             <p className="text-slate-400">Connecting to Firebase Signaling Server</p>
             <button 
               onClick={cancelMatchmaking}
               data-ui-interactive="true"
               className="glass-button-danger mt-4"
             >
-              Cancel
+              {t('cancel')}
             </button>
           </div>
         )}
