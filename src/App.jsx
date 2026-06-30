@@ -694,28 +694,28 @@ function App() {
                         onChange={(e) => i18n.changeLanguage(e.target.value)}
                         className="bg-slate-100 text-slate-800 border-2 border-slate-800 font-bold text-sm px-2 py-1 outline-none cursor-pointer"
                       >
-                        <option value="ko">한국어 (Korean)</option>
-                        <option value="en">English (English)</option>
-                        <option value="ja">日本語 (Japanese)</option>
-                        <option value="zh-CN">简体中文 (Chinese S.)</option>
-                        <option value="zh-TW">繁體中文 (Chinese T.)</option>
-                        <option value="es">Español (Spanish)</option>
-                        <option value="fr">Français (French)</option>
-                        <option value="de">Deutsch (German)</option>
-                        <option value="pt">Português (Portuguese)</option>
-                        <option value="ru">Русский (Russian)</option>
-                        <option value="tr">Türkçe (Turkish)</option>
-                        <option value="id">Bahasa Indonesia (Indonesian)</option>
-                        <option value="th">ไทย (Thai)</option>
-                        <option value="vi">Tiếng Việt (Vietnamese)</option>
-                        <option value="pl">Polski (Polish)</option>
-                        <option value="it">Italiano (Italian)</option>
-                        <option value="ar">العربية (Arabic)</option>
-                        <option value="hi">हिन्दी (Hindi)</option>
-                        <option value="tl">Tagalog (Filipino)</option>
-                        <option value="nl">Nederlands (Dutch)</option>
-                        <option value="sv">Svenska (Swedish)</option>
-                        <option value="uk">Українська (Ukrainian)</option>
+                        <option value="ko">한국어</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="zh-CN">简体中文</option>
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="pt">Português</option>
+                        <option value="ru">Русский</option>
+                        <option value="tr">Türkçe</option>
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="th">ไทย</option>
+                        <option value="vi">Tiếng Việt</option>
+                        <option value="pl">Polski</option>
+                        <option value="it">Italiano</option>
+                        <option value="ar">العربية</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="tl">Tagalog</option>
+                        <option value="nl">Nederlands</option>
+                        <option value="sv">Svenska</option>
+                        <option value="uk">Українська</option>
                       </select>
                     </div>
                   </div>
